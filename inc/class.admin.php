@@ -279,55 +279,17 @@ class SimpleTaxonomy_Admin {
 			$_action 	 = 'add-taxonomy';
 			$submit_val	 = __('Add taxonomy', 'simple-taxonomy');
 			$nonce_field = 'simpletaxonomy-add-taxo';
-			
-			foreach( self::getFields() as $field => $default_value ) {  // Use default value
-				if ( is_array($default_value) ) {
-					$taxonomy[$field] = array();
-					foreach( $default_value as $k => $_v ) {
-						if ( is_string($_v) ) {
-							$taxonomy[$field][$k] = trim(stripslashes($_v));
-						} else {
-							$taxonomy[$field][$k] = $_v;
-						}
-					}
-				} else {
-					$taxonomy[$field] = $default_value;
-				}
-			}
 		} else {
 			$edit 		 = true;
 			$_action 	 = 'merge-taxonomy';
 			$submit_val	 = __('Update taxonomy', 'simple-taxonomy');
-			$nonce_field = 'simpletaxonomy-edit-taxo';
-			
-			// clean values
-			foreach( self::getFields() as $field => $default_value ) {
-				if ( isset($taxonomy[$field]) && is_string($taxonomy[$field]) ) { // Isset, juste clean values
-					$taxonomy[$field] = trim(stripslashes($taxonomy[$field]));
-				} elseif ( isset($taxonomy[$field]) && is_array($taxonomy[$field]) ) { // Isset, but dispatch array
-					foreach( $taxonomy[$field] as $k => $_v ) {
-						if ( is_string($_v) ) {
-							$taxonomy[$field][$k] = trim(stripslashes($_v));
-						} else {
-							$taxonomy[$field][$k] = $_v;
-						}
-					}
-				} elseif ( !isset($taxonomy[$field]) ) { // No set, try to set default values
-					if ( is_array($default_value) ) {
-						$taxonomy[$field] = array();
-						foreach( $default_value as $k => $_v ) {
-							if ( is_string($_v) ) {
-								$taxonomy[$field][$k] = trim(stripslashes($_v));
-							} else {
-								$taxonomy[$field][$k] = $_v;
-							}
-						}
-					} else {
-						$taxonomy[$field] = $default_value;
-					}
-				}
-			}
+			$nonce_field = 'simpletaxonomy-edit-taxo';		
 		}
+
+		// Get default values if need
+		$taxonomy = wp_parse_args( $taxonomy, self::get_taxonomy_default_fields() );
+		$taxonomy['labels'] = wp_parse_args( $taxonomy['labels'], self::get_taxonomy_default_labels() );
+		$taxonomy['capabilities'] = wp_parse_args( $taxonomy['capabilities'], self::get_taxonomy_default_capabilities() );
 		?>
 		<form id="addtag" method="post" action="<?php echo $admin_url ; ?>">
 			<input type="hidden" name="action" value="<?php echo $_action; ?>" />
@@ -588,6 +550,12 @@ class SimpleTaxonomy_Admin {
 											</td>
 										</tr>
 										<tr valign="top">
+											<th scope="row"><label for="labels-view_item"><?php _e('View Term', 'simple-taxonomy'); ?></label></th>
+											<td>
+												<input name="labels[view_item]" type="text" id="labels-view_item" value="<?php echo esc_attr($taxonomy['labels']['view_item']); ?>" class="regular-text" />
+											</td>
+										</tr>
+										<tr valign="top">
 											<th scope="row"><label for="labels-update_item"><?php _e('Update Term', 'simple-taxonomy'); ?></label></th>
 											<td>
 												<input name="labels[update_item]" type="text" id="labels-update_item" value="<?php echo esc_attr($taxonomy['labels']['update_item']); ?>" class="regular-text" />
@@ -698,7 +666,7 @@ class SimpleTaxonomy_Admin {
 				
 			// Clean values from _POST
 			$taxonomy = array();
-			foreach( self::getFields() as $field => $default_value ) {
+			foreach( self::get_taxonomy_default_fields() as $field => $default_value ) {
 				if ( isset($_POST[$field]) && is_string($_POST[$field]) ) {// String ?
 					$taxonomy[$field] = trim( stripslashes( $_POST[$field] ) );
 				} elseif ( isset($_POST[$field]) ) {
@@ -741,8 +709,7 @@ class SimpleTaxonomy_Admin {
 				}
 				
 				// Flush rewriting rules !
-				global $wp_rewrite;
-				$wp_rewrite->flush_rules(false);
+				flush_rewrite_rules( false );
 				
 				return true;
 			} else {
@@ -818,8 +785,7 @@ class SimpleTaxonomy_Admin {
 			self::deleteTaxonomy( $taxonomy, false );
 			
 			// Flush rewriting rules !
-			global $wp_rewrite;
-			$wp_rewrite->flush_rules(false);
+			flush_rewrite_rules( false );
 			
 			return true;
 		} elseif ( isset($_GET['action']) && isset($_GET['taxonomy_name']) && $_GET['action'] == 'flush-delete' ) {
@@ -830,8 +796,7 @@ class SimpleTaxonomy_Admin {
 			self::deleteTaxonomy( $taxonomy, true );
 			
 			// Flush rewriting rules !
-			global $wp_rewrite;
-			$wp_rewrite->flush_rules(false);
+			flush_rewrite_rules( false );
 			
 			return true;
 		}
@@ -939,7 +904,7 @@ class SimpleTaxonomy_Admin {
 	 */
 	private static function getObjectTypes( $key = '' ) {
 		// Get all post types registered.
-		$object_types = get_post_types( array(), 'objects' );
+		$object_types = get_post_types( array('public' => true), 'objects' );
 		$object_types = apply_filters( 'staxo-object-types', $object_types, $key );
 		if ( isset($object_types[$key]) ) {
 			return $object_types[$key];
@@ -1015,7 +980,7 @@ class SimpleTaxonomy_Admin {
 	/**
 	 * Get array fields for CPT object
 	 */
-	private static function getFields() {
+	private static function get_taxonomy_default_fields() {
 		return array( 
 			'name' 			=> '',
 			'objects' 		=> array(),
@@ -1026,28 +991,8 @@ class SimpleTaxonomy_Admin {
 			'show_ui' 		=> 1,
 			'show_tagcloud' => 1,
 			'show_in_nav_menus' => 1,
-			'labels' 		=> array(
-								'name' 							=> _x( 'Post Terms', 'taxonomy general name', 'simple-taxonomy' ),
-								'singular_name' 				=> _x( 'Post Term', 'taxonomy singular name', 'simple-taxonomy' ),
-								'search_items' 					=> __( 'Search Terms', 'simple-taxonomy' ),
-								'popular_items' 				=> __( 'Popular Terms', 'simple-taxonomy' ),
-								'all_items' 					=> __( 'All Terms', 'simple-taxonomy' ),
-								'parent_item' 					=> __( 'Parent Term', 'simple-taxonomy' ),
-								'parent_item_colon' 			=> __( 'Parent Term:', 'simple-taxonomy' ),
-								'edit_item' 					=> __( 'Edit Term', 'simple-taxonomy' ),
-								'update_item' 					=> __( 'Update Term', 'simple-taxonomy' ),
-								'add_new_item' 					=> __( 'Add New Term', 'simple-taxonomy' ),
-								'new_item_name' 				=> __( 'New Term Name', 'simple-taxonomy' ),
-								'separate_items_with_commas' 	=> __( 'Separate terms with commas', 'simple-taxonomy' ),
-								'add_or_remove_items' 			=> __( 'Add or remove terms', 'simple-taxonomy' ),
-								'choose_from_most_used' 		=> __( 'Choose from the most used terms', 'simple-taxonomy' )
-							),
-			'capabilities' 	=> array(
-								'manage_terms' => 'manage_categories',
-								'edit_terms'   => 'manage_categories',
-								'delete_terms' => 'manage_categories',
-								'assign_terms' => 'edit_posts'
-							),
+			'labels' 		=> array(),
+			'capabilities' 	=> array(),
 			'public' 		=> 1,
 			// Specific to plugin
 			'objects'		=> array(),
@@ -1055,5 +1000,39 @@ class SimpleTaxonomy_Admin {
 			'auto' 			=> 'none'
 		);
 	}
+
+/**
+	 * Get array fields for CPT object
+	 */
+	private static function get_taxonomy_default_labels() {
+		return array(
+			'name' 							=> _x( 'Post Terms', 'taxonomy general name', 'simple-taxonomy' ),
+			'singular_name' 				=> _x( 'Post Term', 'taxonomy singular name', 'simple-taxonomy' ),
+			'search_items' 					=> __( 'Search Terms', 'simple-taxonomy' ),
+			'popular_items' 				=> __( 'Popular Terms', 'simple-taxonomy' ),
+			'all_items' 					=> __( 'All Terms', 'simple-taxonomy' ),
+			'parent_item' 					=> __( 'Parent Term', 'simple-taxonomy' ),
+			'parent_item_colon' 			=> __( 'Parent Term:', 'simple-taxonomy' ),
+			'edit_item' 					=> __( 'Edit Term', 'simple-taxonomy' ),
+			'view_item' 					=> __( 'View Term', 'simple-taxonomy' ),
+			'update_item' 					=> __( 'Update Term', 'simple-taxonomy' ),
+			'add_new_item' 					=> __( 'Add New Term', 'simple-taxonomy' ),
+			'new_item_name' 				=> __( 'New Term Name', 'simple-taxonomy' ),
+			'separate_items_with_commas' 	=> __( 'Separate terms with commas', 'simple-taxonomy' ),
+			'add_or_remove_items' 			=> __( 'Add or remove terms', 'simple-taxonomy' ),
+			'choose_from_most_used' 		=> __( 'Choose from the most used terms', 'simple-taxonomy' )
+		);
+	}
+
+/**
+	 * Get array fields for CPT object
+	 */
+	private static function get_taxonomy_default_capabilities() {
+		return array(
+			'manage_terms' => 'manage_categories',
+			'edit_terms'   => 'manage_categories',
+			'delete_terms' => 'manage_categories',
+			'assign_terms' => 'edit_posts'
+		);
+	}
 }
-?>

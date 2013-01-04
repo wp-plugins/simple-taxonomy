@@ -185,4 +185,3 @@ class SimpleTaxonomy_Client {
 		return self::taxonomyFilter( $content, 'excerpt' );
 	}
 }
-?>

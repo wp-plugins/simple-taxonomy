@@ -217,4 +217,3 @@ class SimpleTaxonomy_Admin_Post {
 		return self::post_select_meta_box( $post, $box, true );
 	}
 }
-?>

@@ -6,8 +6,8 @@ WordPress 3.1 and up allow for reasonably simple custom taxonomy, this plugin ma
 * Donate link: http://www.beapi.fr/donate/
 * Tags: tags, taxonomies, custom taxonomies, taxonomy, category, categories, hierarchical, termmeta, meta, term meta, term conversion, conversion
 * Requires at least: 3.1
-* Stable tag: 3.4.1
-* Tested up to: 3.4.1
+* Stable tag: 3.5
+* Tested up to: 3.5
 * License: GPLv2 or later
 * License URI: http://www.gnu.org/licenses/gpl-2.0.html
 

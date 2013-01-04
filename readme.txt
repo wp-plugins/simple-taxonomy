@@ -3,8 +3,8 @@ Contributors: momo360modena
 Donate link: http://www.beapi.fr/donate/
 Tags: tags, taxonomies, custom taxonomies, taxonomy, category, categories, hierarchical, termmeta, meta, term meta, term conversion, conversion
 Requires at least: 3.1
-Stable tag: 3.4.1
-Tested up to: 3.4.1
+Stable tag: 3.5
+Tested up to: 3.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -16,9 +16,9 @@ WordPress 3.1 and up allow for reasonably simple custom taxonomy, this plugin ma
 
 Add support for taxonomy with or without hierarchical. Choose the selector type for write post.
 
-Allow to add taxonomy to any objects registered on your installation. This plugin can be coupled with the plugin Custom Fields for WordPress to a new term meta database that allow to create on fly any field need for the taxonomy. For example, for a "Number" taxonomy, you can add fields : number ID, date of parution, screenshot, etc !
+Allow to add taxonomy to any objects registered on your installation. This plugin can be coupled with the plugin ACF to a new term meta database that allow to create on fly any field need for the taxonomy. For example, for a "Number" taxonomy, you can add fields : number ID, date of parution, screenshot, etc !
 
-This plugin is developped on WordPress 3.3, with the constant WP_DEBUG to TRUE.
+This plugin is developped on WordPress 3.5, with the constant WP_DEBUG to TRUE.
 
 This plugin allows you to add taxonomy just by giving them a name and somes options in the backend. It then creates the taxonomy for you, takes care of the URL rewrites, provides a widget you can use to display a "taxonomy cloud" or a list of all the stuff in there, and it allows you to show the taxonomy contents at the end of posts and excerpts as well.
 To boot, it comes with a set of template tags for those who don't mind adapting their own theme.
@@ -54,6 +54,11 @@ You must install a plugin for managing roles and permissions as:
 
 == Changelog ==
 
+* Version 3.5 :
+	* Mark as compatible with WP 3.5
+	* Remove end PHP ?>
+	* Use wp_parse_args for cleanup code
+	* Add param "view_item" for labels
 * Version 3.4.1 :
 	* Fix a bug with query_var on rewrite rules (thanks to Chris Talkington)
 	* Change PHP for use __construct()

@@ -199,4 +199,3 @@ class SimpleTaxonomy_Widget extends WP_Widget {
 	<?php
 	}
 }
-?>

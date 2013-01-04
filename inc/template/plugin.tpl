@@ -9,7 +9,7 @@ Author URI: http://www.todo.com
 
 ----
 
-Copyright 2012 - TODO Author
+Copyright 2013 - TODO Author
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

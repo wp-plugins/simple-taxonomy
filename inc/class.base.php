@@ -16,4 +16,3 @@ class SimpleTaxonomy_Base {
 	 */
 	public static function deactivate() {}
 }
-?>

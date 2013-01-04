@@ -14,7 +14,7 @@ class SimpleTaxonomy_Admin_Conversion{
 	 * Listen POST datas for make bulk terms conversion to new taxonomy
 	 */
 	public static function admin_init() {
-		global $pagenow, $wpdb, $taxnow, $messages;
+		global $pagenow, $wpdb, $taxnow, $messages, $post_type;
 		
 		if ( $pagenow != 'edit-tags.php' ) 
 			return false;
@@ -89,8 +89,9 @@ class SimpleTaxonomy_Admin_Conversion{
 			}
 			
 			$location = 'edit-tags.php?taxonomy=' . $taxnow;
-			if ( 'post' != $post_type )
+			if ( isset($post_type) && 'post' != $post_type )
 				$location .= '&post_type=' . $post_type;
+			
 			if ( $referer = wp_get_referer() ) {
 				if ( false !== strpos( $referer, 'edit-tags.php' ) )
 					$location = $referer;
@@ -122,4 +123,3 @@ class SimpleTaxonomy_Admin_Conversion{
 		}
 	}
 }
-?>

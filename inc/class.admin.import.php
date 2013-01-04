@@ -35,7 +35,7 @@ class SimpleTaxonomy_Admin_Import{
 	private static function checkImportation() {
 		global $wpdb;
 		
-		if ( isset($_POST['taxonomy-import']) ) {
+		if ( isset($_POST['taxonomy-import']) && isset($_POST['import_content']) && !empty($_POST['import_content']) ) {
 			check_admin_referer( 'import-terms' );
 			
 			if ( !taxonomy_exists($_POST['taxonomy']) ) {
@@ -46,7 +46,7 @@ class SimpleTaxonomy_Admin_Import{
 			$terms  = explode( "\n", $_POST['import_content'] );
 			
 			$j = 0;
-			foreach( (array) $terms as $term_line ) {
+			foreach( $terms as $term_line ) {
 				/*
 				if ( trim($term_line) == '' ) {
 					continue;
@@ -177,4 +177,3 @@ class SimpleTaxonomy_Admin_Import{
 		<?php
 	}
 }
-?>

@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Simple Taxonomy
-Version: 3.4.1
+Version: 3.5
 Plugin URI: https://github.com/herewithme/simple-taxonomy
 Description: WordPress 3.1 and up allow for reasonably simple custom taxonomy, this plugin makes it even simpler, removing the need for you to write <em>any</em> code.
 Author: Amaury Balmer
@@ -9,7 +9,7 @@ Author URI: http://www.beapi.fr
 
 ----
 
-Copyright 2010-2012 Amaury Balmer (amaury@beapi.fr)
+Copyright 2010-2013 Amaury Balmer (amaury@beapi.fr)
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ Todo :
 */
 
 // Folder name
-define ( 'STAXO_VERSION', '3.4.1' );
+define ( 'STAXO_VERSION', '3.5' );
 define ( 'STAXO_OPTION',  'simple-taxonomy' );
 define ( 'STAXO_FOLDER',  'simple-taxonomy' );
 
@@ -65,24 +65,20 @@ if ( is_admin() ) { // Call admin classes
 
 add_action( 'plugins_loaded', 'init_simple_taxonomy' );
 function init_simple_taxonomy() {
-	global $simple_taxonomy;
-	
 	// Load translations
 	load_plugin_textdomain ( 'simple-taxonomy', false, basename(rtrim(dirname(__FILE__), '/')) . '/languages' );
 	
 	// Client
-	$simple_taxonomy['client-base']  = new SimpleTaxonomy_Client();
+	new SimpleTaxonomy_Client();
 	
 	// Admin
 	if ( is_admin() ) {
-		// Class admin
-		$simple_taxonomy['admin-base'] 		 = new SimpleTaxonomy_Admin();
-		$simple_taxonomy['admin-post'] 		 = new SimpleTaxonomy_Admin_Post();
-		$simple_taxonomy['admin-conversion'] = new SimpleTaxonomy_Admin_Conversion();
-		$simple_taxonomy['admin-import'] 	 = new SimpleTaxonomy_Admin_Import();
+		new SimpleTaxonomy_Admin();
+		new SimpleTaxonomy_Admin_Post();
+		new SimpleTaxonomy_Admin_Conversion();
+		new SimpleTaxonomy_Admin_Import();
 	}
 	
 	// Widget
 	add_action( 'widgets_init', create_function('', 'return register_widget("SimpleTaxonomy_Widget");') );
 }
-?>

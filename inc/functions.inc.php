@@ -25,4 +25,3 @@ function get_term_by_tt_id( $term_taxonomy_id = 0, $taxonomy = '' ) {
 	
 	return $term;
 }
-?>
